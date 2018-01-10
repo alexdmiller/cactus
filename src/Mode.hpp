@@ -12,9 +12,11 @@
 #include <stdio.h>
 #include "ofMain.h"
 
+class ofApp;
+
 class Mode {
 public:
-  Mode(string name_) : name(name_) {}
+  Mode(ofApp* app_, string name_) : app(app_), name(name_) {}
   string getName() { return name; }
   
   virtual void draw() {};
@@ -24,9 +26,14 @@ public:
   virtual void mousePressed(float x, float y) {};
   virtual void mouseReleased(float x, float y) {};
   virtual void keyPressed(int key) {};
+  virtual void keyReleased(int key) {};
+
+protected:
+  ofApp* getApp() { return app; }
 
 private:
   string name;
+  ofApp* app;
 };
 
 

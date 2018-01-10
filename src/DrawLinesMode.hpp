@@ -8,8 +8,7 @@ class ofApp;
 
 class DrawLinesMode : public Mode {
 public:
-  DrawLinesMode(vector<vector<ofMesh*>>* lines_) : Mode("LINES"), lines(lines_) {}
-
+  DrawLinesMode(ofApp* app_, vector<vector<ofMesh*>>* groups_) : Mode(app_, "LINES"), groups(groups_) {}
   void draw();
   void drawUI();
   void mouseMoved(float x, float y);
@@ -19,10 +18,12 @@ public:
   void keyPressed(int key);
 
 private:
+  void smooth(ofMesh* mesh);
+
   int selectedLine = -1;
-  int selectedCactus = -1;
+  int selectedGroup = -1;
   
-  vector<vector<ofMesh*>>* lines;
+  vector<vector<ofMesh*>>* groups;
 };
 
 #endif

@@ -1,8 +1,26 @@
 #include "ofApp.h"
+#include "DrawLinesMode.hpp"
+#include "MaskMode.hpp"
+#include "CactusPulse.hpp"
+#include "Crawler.hpp"
+#include "Mesh.hpp"
+#include "Wobbler.hpp"
+#include "MeshEditMode.hpp"
+#include "Triangles.hpp"
+#include <unordered_set>
+#include <utility>
 
 void ofApp::setup(){
-  modes.push_back(new DrawLinesMode(&cacti));
-  modes.push_back(new MaskMode());
+  modes.push_back(new MeshEditMode(this, &mesh));
+  modes.push_back(new Triangles(this, &mesh));
+  modes.push_back(new Crawler(this, &hanging));
+  modes.push_back(new DrawLinesMode(this, &cacti));
+  modes.push_back(new MaskMode(this));
+  modes.push_back(new CactusPulse(this, &cacti));
+  modes.push_back(new Crawler(this, &cacti));
+  modes.push_back(new Mesh(this, &cacti));
+  modes.push_back(new Wobbler(this, &cacti));
+  
   
   ofToggleFullscreen();
   
@@ -11,20 +29,62 @@ void ofApp::setup(){
   
   image.load("pic.jpg");
   
-  int i = 0;
-  while (ofFile::doesFileExist("mesh" + to_string(i))) {
-    ofMesh* m = new ofMesh();
-    load(m, "mesh" + to_string(i));
-    //lines.push_back(m);
-    i++;
+  int j = 0;
+  while (ofFile::doesFileExist("group_" + to_string(j) + "_mesh_0")) {
+    vector<ofMesh*> group;
+    int i = 0;
+    while (ofFile::doesFileExist("group_" + to_string(j) + "_mesh_" + to_string(i))) {
+      cout<<"group_" + to_string(j) + "_mesh_" + to_string(i) + "\n";
+      ofMesh* m = new ofMesh();
+      load(m, "group_" + to_string(j) + "_mesh_" + to_string(i));
+      group.push_back(m);
+      i++;
+    }
+    cacti.push_back(group);
+    j++;
+  }
+  
+  if (ofFile::doesFileExist("mesh")) {
+    load(&mesh, "mesh");
   }
 }
 
-void ofApp::update(){
+void ofApp::update() {
   
 }
 
+void ofApp::drawUI() {
+  for (int i = 0; i < points.size(); i++) {
+    ofNoFill();
+    ofSetColor(255, 0, 0, 255);
+    ofDrawCircle(points.at(i), 10);
+  }
+
+}
+
 void ofApp::draw() {
+  ofPoint currentMousePosition(ofGetMouseX(), ofGetMouseY());
+  targetMouseVelocity.set(currentMousePosition - lastMousePosition);
+  lastMousePosition.set(currentMousePosition);
+  
+  ofPoint delta(targetMouseVelocity - mouseVelocity);
+  mouseVelocity += delta / 10;
+  
+  CGSetLocalEventsSuppressionInterval(0);
+  if (currentMousePosition.y <= 0) {
+    CGPoint point;
+    point.x = currentMousePosition.x;
+    point.y = ofGetHeight() - 2;
+    CGWarpMouseCursorPosition(point);
+    cout << "top warp\n";
+  } else if (currentMousePosition.y >= ofGetHeight() - 1) {
+    CGPoint point;
+    point.x = currentMousePosition.x;
+    point.y = 1;
+    CGWarpMouseCursorPosition(point);
+    cout << "bottom warp\n";
+  }
+  
   ofBackground(0, 0, 0);
   
   modes[currentMode]->draw();
@@ -68,73 +128,39 @@ void ofApp::draw() {
   ofSetColor(255, 255, 255, 255);
   canvas.draw(ofPoint(0, 0));
   
-  for (int i = 0; i < points.size(); i++) {
-    ofNoFill();
-    ofSetColor(255, 0, 0, 255);
-    ofDrawCircle(points.at(i), 10);
-  }
-  
-  // Draw pulsing lines
-  int count = 0;
-  for (int j = 0; j < cacti.size(); j++) {
-    for (int i = 0; i < cacti[j].size(); i++) {
-      ofMesh* mesh = cacti[j][i];
-
-//      if (i == selectedLine) {
-//        ofSetColor(255, 0, 0);
-//      } else {
-//        ofSetColor(255, 255, 255);
-//      }
-
-      ofFill();
-      
-      for (int j = 0; j < (int) mesh->getNumVertices() - 1; j++) {
-        float w = (sin((float) i + (float) j / 5 + ofGetElapsedTimef() * 4) + 1) / 2;
-        ofDrawCircle(mesh->getVertex(j), w * w * w * w * 10);
-        ofDrawLine(mesh->getVertex(j), mesh->getVertex(j + 1));
-        
-        //ofSetLineWidth(w * w * w * 10);
-        
-        count++;
-      }
+  if (showUI) {
+    ofDrawBitmapString(ofToString(ofGetFrameRate()), 50, 50);
+  //  ofDrawBitmapString(ofToString(count) + " vertices", 50, 70);
+    for (int i = 0; i < modes.size(); i++) {
+      ofDrawBitmapString(ofToString((i + 1)) + "\t" + modes[i]->getName(), 50, 90 + i * 20);
     }
+    
+    ofPushMatrix();
+    ofTranslate(50, 90 + modes.size() * 20 + 30);
+    ofDrawBitmapString(modes[currentMode]->getName(), 0, 0);
+    ofSetColor(255, 255, 255);
+    ofSetLineWidth(1);
+    ofDrawLine(0, 10, 200, 10);
+    ofTranslate(0, 30);
+    modes[currentMode]->drawUI();
+    ofPopMatrix();
   }
-  
-  ofDrawBitmapString(ofToString(ofGetFrameRate()), 50, 50);
-  ofDrawBitmapString(ofToString(count) + " vertices", 50, 70);
-  for (int i = 0; i < 2; i++) {
-    ofDrawBitmapString(ofToString((i + 1)) + "\t" + modes[i]->getName(), 50, 90 + i * 20);
-  }
-  
-  ofPushMatrix();
-  ofTranslate(50, 90 + 2 * 20 + 30);
-  ofDrawBitmapString(modes[currentMode]->getName(), 0, 0);
-  ofSetColor(255, 255, 255);
-  ofDrawLine(0, 10, 200, 10);
-  ofTranslate(0, 30);
-  modes[currentMode]->drawUI();
-  ofPopMatrix();
 }
 
-/*
- 1    mask mode
- 2    cactus mode
- C    new cactus
- L    new line
- */
-void ofApp::keyPressed(int key){
-  cout << key << "\n";
-  if (key == 49) {
-    currentMode = 0;
-  } else if (key == 50) {
-    currentMode = 1;
+void ofApp::keyPressed(int key) {
+  if (key >= 49 && key <= 60) {
+    if (key - 49 < modes.size()) {
+      currentMode = key - 49;
+    }
+  } else if (key == 32) {
+    showUI = !showUI;
   } else {
     modes[currentMode]->keyPressed(key);
   }
 }
 
 void ofApp::keyReleased(int key){
-  
+  modes[currentMode]->keyReleased(key);
 }
 
 void ofApp::mouseMoved(int x, int y ){
@@ -149,18 +175,6 @@ void ofApp::mousePressed(int x, int y, int button) {
   modes[currentMode]->mousePressed(x, y);
 }
 
-void ofApp::addNewLine() {
-  ofMesh* m = new ofMesh();
-  m->setMode(OF_PRIMITIVE_LINE_STRIP);
-//  cacti[selectedCactus].push_back(m);
-//  selectedLine = cacti[selectedCactus].size() - 1;
-}
-
-void ofApp::addNewCactus() {
-  vector<ofMesh*> cactus;
-  cacti.push_back(cactus);
-}
-
 void ofApp::mouseReleased(int x, int y, int button) {
   modes[currentMode]->mouseReleased(x, y);
 }
@@ -168,30 +182,11 @@ void ofApp::mouseReleased(int x, int y, int button) {
 void ofApp::exit() {
   for (int j = 0; j < cacti.size(); j++) {
     for (int i = 0; i < cacti[j].size(); i++) {
-      save(cacti[j][i], "cactus_" + to_string(j) + "_mesh_" + to_string(i));
-    }
-  }
-}
-
-void ofApp::smooth(ofMesh* mesh) {
-  int original = mesh->getNumVertices();
-  int removed = 0;
-  for (int i = mesh->getNumVertices() - 1; i > 0; i--) {
-    ofPoint p1 = mesh->getVertex(i);
-    ofPoint p2 = mesh->getVertex(i - 1);
-    if (p1.distance(p2) < 2) {
-      ofPoint points[] = {p1, p2};
-      ofPoint avg;
-      avg.average(points, 2);
-      
-      mesh->removeVertex(i - 1);
-      mesh->setVertex(i, avg);
-      removed++;
+      save(cacti[j][i], "group_" + to_string(j) + "_mesh_" + to_string(i));
     }
   }
   
-  cout << "removed " << removed << " out of " << original << "\n";
-  cout << "final count: " << mesh->getNumVertices() << "\n";
+  save(&mesh, "mesh");
 }
 
 void ofApp::save(ofMesh* mesh, string filename) {
@@ -200,17 +195,70 @@ void ofApp::save(ofMesh* mesh, string filename) {
   for (int i = 0; i < mesh->getNumVertices(); i++) {
     file << mesh->getVertex(i).x << " " << mesh->getVertex(i).y << "\n";
   }
+  file << "indices\n";
+  for (int i = 0; i < mesh->getNumIndices(); i++) {
+    file << mesh->getIndex(i) << "\n";
+  }
   file.close();
 }
 
 void ofApp::load(ofMesh* mesh, string filename) {
   auto lines = ofSplitString(ofBufferFromFile(filename).getText(), "\n");
-  for (int i = 0; i < lines.size(); i++) {
-    if (!lines.at(i).empty()) {
-      auto coords = ofSplitString(lines.at(i), " ");
-      mesh->addVertex(ofPoint(ofToFloat(coords.at(0)), ofToFloat(coords.at(1))));
-    }
+  
+  int lineNumber = 0;
+  while (lineNumber < lines.size() &&
+         !lines.at(lineNumber).empty() &&
+         lines.at(lineNumber) != "indices") {
+    auto coords = ofSplitString(lines.at(lineNumber), " ");
+    mesh->addVertex(ofPoint(ofToFloat(coords.at(0)), ofToFloat(coords.at(1))));
+    lineNumber++;
+  }
+  
+  lineNumber++;
+  
+  while (lineNumber < lines.size() &&
+         !lines.at(lineNumber).empty()) {
+    mesh->addIndex(ofToFloat(lines.at(lineNumber)));
+    lineNumber++;
   }
 }
+
+ofPoint ofApp::getMouseVelocity() {
+  return mouseVelocity;
+}
+
+void ofApp::transformMeshToGroups() {
+  hanging.clear();
+
+  unordered_set<pair<int, int>,  pair_hash> edges;
+  for (int i = 0; i < mesh.getNumIndices(); i += 3) {
+    for (int j = 0; j < 3; j++) {
+      pair<int, int> edge(mesh.getIndex(i + j), mesh.getIndex(i + ((j + 1) % 3)));
+      pair<int, int> edgeSwapped(edge.second, edge.first);
+      if (edges.find(edge) == edges.end() && edges.find(edgeSwapped) == edges.end()) {
+        edges.insert(edge);
+      }
+    }
+  }
+  
+  vector<ofMesh*> group;
+  for (const auto& edge : edges) {
+    ofMesh* m = new ofMesh();
+    ofPoint p1 = mesh.getVertex(edge.first);
+    ofPoint p2 = mesh.getVertex(edge.second);
+    ofPoint delta = p2 - p1;
+    delta.normalize();
+    int steps = p1.distance(p2) / 5;
+    for (int i = 0; i < steps; i++) {
+      m->addVertex(p1 + delta * 5 * i);
+    }
+    group.push_back(m);
+  }
+  
+  hanging.push_back(group);
+}
+
+
+
 
 

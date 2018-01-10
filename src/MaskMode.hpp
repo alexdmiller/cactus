@@ -16,7 +16,7 @@ class ofApp;
 
 class MaskMode : public Mode {
 public:
-  MaskMode() : Mode("MASK") {}
+  MaskMode(ofApp* app_) : Mode(app_, "MASK") {}
   void draw();
   void drawUI();
   void mouseMoved(float x, float y);
