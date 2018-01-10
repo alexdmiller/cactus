@@ -76,13 +76,27 @@ void ofApp::draw() {
     point.x = currentMousePosition.x;
     point.y = ofGetHeight() - 2;
     CGWarpMouseCursorPosition(point);
-    cout << "top warp\n";
+    lastMousePosition.set(lastMousePosition.x, ofGetHeight() + lastMousePosition.y);
   } else if (currentMousePosition.y >= ofGetHeight() - 1) {
     CGPoint point;
     point.x = currentMousePosition.x;
     point.y = 1;
     CGWarpMouseCursorPosition(point);
-    cout << "bottom warp\n";
+    lastMousePosition.set(lastMousePosition.x, ofGetHeight() - lastMousePosition.y);
+  }
+  
+  if (currentMousePosition.x <= 0) {
+    CGPoint point;
+    point.x = ofGetWidth() - 2;
+    point.y = currentMousePosition.y;
+    CGWarpMouseCursorPosition(point);
+    lastMousePosition.set(ofGetWidth() + lastMousePosition.x, lastMousePosition.y);
+  } else if (currentMousePosition.x >= ofGetWidth() - 1) {
+    CGPoint point;
+    point.x = 1;
+    point.y = currentMousePosition.y;
+    CGWarpMouseCursorPosition(point);
+    lastMousePosition.set(ofGetWidth() - lastMousePosition.x, lastMousePosition.y);
   }
   
   ofBackground(0, 0, 0);
@@ -145,6 +159,11 @@ void ofApp::draw() {
     modes[currentMode]->drawUI();
     ofPopMatrix();
   }
+  
+  ofPushMatrix();
+  ofTranslate(ofGetWidth() / 2, ofGetHeight() / 2);
+  ofDrawLine(0, 0, mouseVelocity.x * 10, mouseVelocity.y * 10);
+  ofPopMatrix();
 }
 
 void ofApp::keyPressed(int key) {
