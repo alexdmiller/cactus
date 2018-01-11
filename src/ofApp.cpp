@@ -7,20 +7,12 @@
 #include "Wobbler.hpp"
 #include "MeshEditMode.hpp"
 #include "Triangles.hpp"
+#include "ModeGroup.hpp"
 #include <unordered_set>
 #include <utility>
 
 void ofApp::setup(){
-  modes.push_back(new MeshEditMode(this, &mesh));
-  modes.push_back(new Triangles(this, &mesh));
-  modes.push_back(new Crawler(this, &hanging));
-  modes.push_back(new DrawLinesMode(this, &cacti));
-  modes.push_back(new MaskMode(this));
-  modes.push_back(new CactusPulse(this, &cacti));
-  modes.push_back(new Crawler(this, &cacti));
-  modes.push_back(new Mesh(this, &cacti));
-  modes.push_back(new Wobbler(this, &cacti));
-  
+
   
   ofToggleFullscreen();
   
@@ -47,6 +39,25 @@ void ofApp::setup(){
   if (ofFile::doesFileExist("mesh")) {
     load(&mesh, "mesh");
   }
+  
+  transformMeshToGroups();
+
+  modes.push_back(new DrawLinesMode(this, &cacti));
+
+  vector<Mode*> modeList;
+  modeList.push_back(new Triangles(this, &mesh));
+  modeList.push_back(new Crawler(this, &cacti));
+  modes.push_back(new ModeGroup(this, "TRI & CRAWL", modeList));
+  
+  //  modeList.push_back(new MeshEditMode(this, &mesh));
+  //  modes.push_back(new MeshEditMode(this, &mesh));
+  //  modes.push_back(new Triangles(this, &mesh));
+  //  modes.push_back(new Crawler(this, &hanging));
+  //  modes.push_back(new MaskMode(this));
+  //  modes.push_back(new CactusPulse(this, &cacti));
+  //  modes.push_back(new Crawler(this, &cacti));
+  //  modes.push_back(new Mesh(this, &cacti));
+  //  modes.push_back(new Wobbler(this, &cacti));
 }
 
 void ofApp::update() {
@@ -59,7 +70,6 @@ void ofApp::drawUI() {
     ofSetColor(255, 0, 0, 255);
     ofDrawCircle(points.at(i), 10);
   }
-
 }
 
 void ofApp::draw() {
@@ -144,7 +154,7 @@ void ofApp::draw() {
   
   if (showUI) {
     ofDrawBitmapString(ofToString(ofGetFrameRate()), 50, 50);
-  //  ofDrawBitmapString(ofToString(count) + " vertices", 50, 70);
+//    ofDrawBitmapString(ofToString(count) + " vertices", 50, 70);
     for (int i = 0; i < modes.size(); i++) {
       ofDrawBitmapString(ofToString((i + 1)) + "\t" + modes[i]->getName(), 50, 90 + i * 20);
     }

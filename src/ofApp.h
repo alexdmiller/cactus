@@ -34,6 +34,7 @@ private:
   
   vector<Mode*> modes;
   int currentMode = 0;
+  
   ofFbo mask;
   ofFbo canvas;
   vector<ofPoint> points;

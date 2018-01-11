@@ -14,6 +14,7 @@
 		C64D0BA12000578C00A49E2E /* Crawler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C64D0B9F2000578C00A49E2E /* Crawler.cpp */; };
 		C64D0BA42000579600A49E2E /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C64D0BA22000579600A49E2E /* Mesh.cpp */; };
 		C64D0BA720006D8F00A49E2E /* Wobbler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C64D0BA520006D8F00A49E2E /* Wobbler.cpp */; };
+		C64D88522007DB9300806F2E /* ModeGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C64D88502007DB9300806F2E /* ModeGroup.cpp */; };
 		C653381C2002ECBE00AB6977 /* MeshEditMode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C653381A2002ECBE00AB6977 /* MeshEditMode.cpp */; };
 		C6A4410D2005973C001AF6F8 /* Triangles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C6A4410B2005973C001AF6F8 /* Triangles.cpp */; };
 		C6AC05012000B00C007A8054 /* Dots.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C6AC04FF2000B00C007A8054 /* Dots.cpp */; };
@@ -66,6 +67,8 @@
 		C64D0BA32000579600A49E2E /* Mesh.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Mesh.hpp; sourceTree = "<group>"; };
 		C64D0BA520006D8F00A49E2E /* Wobbler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Wobbler.cpp; sourceTree = "<group>"; };
 		C64D0BA620006D8F00A49E2E /* Wobbler.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Wobbler.hpp; sourceTree = "<group>"; };
+		C64D88502007DB9300806F2E /* ModeGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ModeGroup.cpp; sourceTree = "<group>"; };
+		C64D88512007DB9300806F2E /* ModeGroup.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ModeGroup.hpp; sourceTree = "<group>"; };
 		C653381A2002ECBE00AB6977 /* MeshEditMode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MeshEditMode.cpp; sourceTree = "<group>"; };
 		C653381B2002ECBE00AB6977 /* MeshEditMode.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MeshEditMode.hpp; sourceTree = "<group>"; };
 		C6A4410B2005973C001AF6F8 /* Triangles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Triangles.cpp; sourceTree = "<group>"; };
@@ -137,6 +140,8 @@
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
 				C63412591FFEC977008F9102 /* Mode.cpp */,
 				C634125A1FFEC977008F9102 /* Mode.hpp */,
+				C64D88502007DB9300806F2E /* ModeGroup.cpp */,
+				C64D88512007DB9300806F2E /* ModeGroup.hpp */,
 				C634125D1FFECC3F008F9102 /* DrawLinesMode.cpp */,
 				C634125E1FFECC3F008F9102 /* DrawLinesMode.hpp */,
 				C63412601FFEFD5A008F9102 /* MaskMode.cpp */,
@@ -259,6 +264,7 @@
 				C634125B1FFEC977008F9102 /* Mode.cpp in Sources */,
 				C63412621FFEFD5A008F9102 /* MaskMode.cpp in Sources */,
 				C6A4410D2005973C001AF6F8 /* Triangles.cpp in Sources */,
+				C64D88522007DB9300806F2E /* ModeGroup.cpp in Sources */,
 				C64D0BA12000578C00A49E2E /* Crawler.cpp in Sources */,
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
