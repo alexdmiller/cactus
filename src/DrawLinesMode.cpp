@@ -13,9 +13,11 @@ void DrawLinesMode::draw() {
   // Draw pulsing lines
   int count = 0;
   for (int j = 0; j < groups->size(); j++) {
+    ofMesh* firstMesh = groups->at(j)[0];
+
     for (int i = 0; i < groups->at(j).size(); i++) {
       ofMesh* mesh = groups->at(j)[i];
-      
+
       if (j == selectedGroup && (i == selectedLine || selectedLine == -1)) {
         ofSetColor(0, 255, 255);
       } else {
@@ -26,7 +28,10 @@ void DrawLinesMode::draw() {
         ofDrawLine(mesh->getVertex(j), mesh->getVertex(j + 1));
       }
     }
+    
+    ofDrawBitmapString(ofToString(j), firstMesh->getVertex(0));
   }
+
 }
 
 void DrawLinesMode::drawUI() {

@@ -46,7 +46,18 @@ void ofApp::setup(){
 
   vector<Mode*> modeList;
   modeList.push_back(new Triangles(this, &mesh));
-  modeList.push_back(new Crawler(this, &cacti));
+  
+  Crawler* crawler = new Crawler(this, new vector<vector<ofMesh*>>(&cacti[0], &cacti[1]));
+  crawler->setLineWeight(3);
+  crawler->setPulseSparsity(1);
+  modeList.push_back(crawler);
+  
+  crawler = new Crawler(this, new vector<vector<ofMesh*>>(&cacti[1], &cacti[2]));
+  crawler->setLineWeight(10);
+  crawler->setPulseSparsity(10);
+  modeList.push_back(crawler);
+  
+  modeList.push_back(new Wobbler(this, new vector<vector<ofMesh*>>(&cacti[2], &cacti[4])));
   modes.push_back(new ModeGroup(this, "TRI & CRAWL", modeList));
   
   //  modeList.push_back(new MeshEditMode(this, &mesh));
@@ -170,10 +181,10 @@ void ofApp::draw() {
     ofPopMatrix();
   }
   
-  ofPushMatrix();
-  ofTranslate(ofGetWidth() / 2, ofGetHeight() / 2);
-  ofDrawLine(0, 0, mouseVelocity.x * 10, mouseVelocity.y * 10);
-  ofPopMatrix();
+//  ofPushMatrix();
+//  ofTranslate(ofGetWidth() / 2, ofGetHeight() / 2);
+//  ofDrawLine(0, 0, mouseVelocity.x * 10, mouseVelocity.y * 10);
+//  ofPopMatrix();
 }
 
 void ofApp::keyPressed(int key) {

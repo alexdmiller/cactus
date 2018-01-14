@@ -10,9 +10,9 @@ void CactusPulse::draw() {
     for (int i = 0; i < groups->at(j).size(); i++) {
       ofMesh* mesh = groups->at(j)[i];
 
-      float w = (sin((float) j * 10 + (float) i / 5 + t) + 1) / 2;
+      float w = (sin((float) j * 10 + (float) i / pulseSparsity + t) + 1) / 2;
       if (w > 0.5) {
-        ofSetLineWidth(w * w * w * 10);
+        ofSetLineWidth(w * w * w * lineWeight);
         for (int j = 0; j < (int) mesh->getNumVertices() - 1; j++) {
           ofDrawLine(mesh->getVertex(j), mesh->getVertex(j + 1));
         }

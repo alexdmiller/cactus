@@ -13,6 +13,8 @@ public:
   
 private:
   ofMesh* mesh;
+  float horizontalT;
+  float verticalT;
 };
 
 #endif
