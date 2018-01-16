@@ -14,6 +14,9 @@ public:
   
 private:
   vector<vector<ofMesh*>>* groups;
+  float t;
+  
+  ofPoint f(ofPoint p, int k);
 };
 
 #endif

@@ -45,7 +45,7 @@ void ofApp::setup(){
   modes.push_back(new DrawLinesMode(this, &cacti));
 
   vector<Mode*> modeList;
-  modeList.push_back(new Triangles(this, &mesh));
+//  modeList.push_back(new Triangles(this, &mesh));
   
   Crawler* crawler = new Crawler(this, new vector<vector<ofMesh*>>(&cacti[0], &cacti[1]));
   crawler->setLineWeight(3);
@@ -56,6 +56,8 @@ void ofApp::setup(){
   crawler->setLineWeight(10);
   crawler->setPulseSparsity(10);
   modeList.push_back(crawler);
+  
+  modeList.push_back(new Wobbler(this, &hanging));
   
   modeList.push_back(new Wobbler(this, new vector<vector<ofMesh*>>(&cacti[2], &cacti[4])));
   modes.push_back(new ModeGroup(this, "TRI & CRAWL", modeList));
