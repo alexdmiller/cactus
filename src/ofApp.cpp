@@ -21,6 +21,19 @@ void ofApp::setup(){
   
   image.load("pic.jpg");
   
+// perf test
+//  for (int i = 0; i < 10; i++) {
+//    vector<ofMesh*> group;
+//    for (int j = 0; j < 10; j++) {
+//      ofMesh* mesh = new ofMesh();
+//      for (int k = 0; k < 400; k++) {
+//        mesh->addVertex(ofPoint(i * 150 + j * 15, k * 2));
+//      }
+//      group.push_back(mesh);
+//    }
+//    cacti.push_back(group);
+//  }
+  
   int j = 0;
   while (ofFile::doesFileExist("group_" + to_string(j) + "_mesh_0")) {
     vector<ofMesh*> group;
@@ -36,41 +49,36 @@ void ofApp::setup(){
     j++;
   }
   
-  if (ofFile::doesFileExist("mesh")) {
-    load(&mesh, "mesh");
+  j = 0;
+  while (ofFile::doesFileExist("mesh_" + to_string(j))) {
+    ofMesh* m = new ofMesh();
+    load(m, "mesh_" + to_string(j));
+    meshes.push_back(m);
+    j++;
   }
   
   transformMeshToGroups();
 
   modes.push_back(new DrawLinesMode(this, &cacti));
+  modes.push_back(new Wobbler(this, &cacti));
+  modes.push_back(new MeshEditMode(this, &meshes));
+  modes.push_back(new Triangles(this, &meshes));
 
   vector<Mode*> modeList;
-//  modeList.push_back(new Triangles(this, &mesh));
+  Crawler* crawler = new Crawler(this, new vector<vector<ofMesh*>>(&cacti[0], &cacti[1]));
+  crawler->setLineWeight(3);
+  crawler->setPulseSparsity(1);
+  modeList.push_back(crawler);
   
-//  Crawler* crawler = new Crawler(this, new vector<vector<ofMesh*>>(&cacti[0], &cacti[1]));
-//  crawler->setLineWeight(3);
-//  crawler->setPulseSparsity(1);
-//  modeList.push_back(crawler);
-//  
-//  crawler = new Crawler(this, new vector<vector<ofMesh*>>(&cacti[1], &cacti[2]));
-//  crawler->setLineWeight(10);
-//  crawler->setPulseSparsity(10);
-//  modeList.push_back(crawler);
-//  
-//  modeList.push_back(new Wobbler(this, &hanging));
-//  
-//  modeList.push_back(new Wobbler(this, new vector<vector<ofMesh*>>(&cacti[2], &cacti[4])));
-//  modes.push_back(new ModeGroup(this, "TRI & CRAWL", modeList));
+  crawler = new Crawler(this, new vector<vector<ofMesh*>>(&cacti[1], &cacti[2]));
+  crawler->setLineWeight(10);
+  crawler->setPulseSparsity(10);
+  modeList.push_back(crawler);
   
-  //  modeList.push_back(new MeshEditMode(this, &mesh));
-  //  modes.push_back(new MeshEditMode(this, &mesh));
-  //  modes.push_back(new Triangles(this, &mesh));
-  //  modes.push_back(new Crawler(this, &hanging));
-  //  modes.push_back(new MaskMode(this));
-  //  modes.push_back(new CactusPulse(this, &cacti));
-  //  modes.push_back(new Crawler(this, &cacti));
-  //  modes.push_back(new Mesh(this, &cacti));
-  //  modes.push_back(new Wobbler(this, &cacti));
+  modeList.push_back(new Wobbler(this, &hanging));
+  
+  modeList.push_back(new Wobbler(this, new vector<vector<ofMesh*>>(&cacti[2], &cacti[4])));
+  modes.push_back(new ModeGroup(this, "TRI & CRAWL", modeList));
 }
 
 void ofApp::update() {
@@ -240,7 +248,9 @@ void ofApp::exit() {
     }
   }
   
-  save(&mesh, "mesh");
+  for (int j = 0; j < meshes.size(); j++) {
+    save(meshes.at(j), "mesh_" + to_string(j));
+  }
 }
 
 void ofApp::save(ofMesh* mesh, string filename) {
@@ -282,34 +292,38 @@ ofPoint ofApp::getMouseVelocity() {
 }
 
 void ofApp::transformMeshToGroups() {
+  cout << "transform mesh to groups\n";
+  
   hanging.clear();
 
-  unordered_set<pair<int, int>,  pair_hash> edges;
-  for (int i = 0; i < mesh.getNumIndices(); i += 3) {
-    for (int j = 0; j < 3; j++) {
-      pair<int, int> edge(mesh.getIndex(i + j), mesh.getIndex(i + ((j + 1) % 3)));
-      pair<int, int> edgeSwapped(edge.second, edge.first);
-      if (edges.find(edge) == edges.end() && edges.find(edgeSwapped) == edges.end()) {
-        edges.insert(edge);
+  for (ofMesh* mesh : meshes) {
+    unordered_set<pair<int, int>,  pair_hash> edges;
+    for (int i = 0; i < mesh->getNumIndices(); i += 3) {
+      for (int j = 0; j < 3; j++) {
+        pair<int, int> edge(mesh->getIndex(i + j), mesh->getIndex(i + ((j + 1) % 3)));
+        pair<int, int> edgeSwapped(edge.second, edge.first);
+        if (edges.find(edge) == edges.end() && edges.find(edgeSwapped) == edges.end()) {
+          edges.insert(edge);
+        }
       }
     }
-  }
-  
-  vector<ofMesh*> group;
-  for (const auto& edge : edges) {
-    ofMesh* m = new ofMesh();
-    ofPoint p1 = mesh.getVertex(edge.first);
-    ofPoint p2 = mesh.getVertex(edge.second);
-    ofPoint delta = p2 - p1;
-    delta.normalize();
-    int steps = p1.distance(p2) / 5;
-    for (int i = 0; i < steps; i++) {
-      m->addVertex(p1 + delta * 5 * i);
+    
+    vector<ofMesh*> group;
+    for (const auto& edge : edges) {
+      ofMesh* m = new ofMesh();
+      ofPoint p1 = mesh->getVertex(edge.first);
+      ofPoint p2 = mesh->getVertex(edge.second);
+      ofPoint delta = p2 - p1;
+      delta.normalize();
+      int steps = p1.distance(p2) / 5;
+      for (int i = 0; i < steps; i++) {
+        m->addVertex(p1 + delta * 5 * i);
+      }
+      group.push_back(m);
     }
-    group.push_back(m);
+    
+    hanging.push_back(group);
   }
-  
-  hanging.push_back(group);
 }
 
 

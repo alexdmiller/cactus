@@ -43,7 +43,8 @@ void DrawLinesMode::drawUI() {
   ofDrawBitmapString("C   new group\n"
                      "L   new line\n"
                      "N   next group\n"
-                     ">   next line",
+                     ">   next line\n"
+                     "X   delete",
                      0, 40);
 }
 

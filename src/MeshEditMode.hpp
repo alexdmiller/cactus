@@ -8,10 +8,7 @@ class ofApp;
 
 class MeshEditMode : public Mode {
 public:
-  MeshEditMode(ofApp* app_, ofMesh* mesh_) : Mode(app_, "MESH EDIT"), mesh(mesh_) {
-    mesh->setMode(OF_PRIMITIVE_TRIANGLES);
-  }
-
+  MeshEditMode(ofApp* app_, vector<ofMesh*>* meshes_) : Mode(app_, "MESH EDIT"), meshes(meshes_) {}
   void draw();
   void drawUI();
   void mouseMoved(float x, float y);
@@ -22,8 +19,9 @@ public:
   void keyReleased(int key);
   
 private:
-  ofMesh* mesh;
-  int selectedIndex;
+  vector<ofMesh*>* meshes;
+  int selectedMesh = -1;
+  int selectedIndex = -1;
   bool shiftDown;
 };
 

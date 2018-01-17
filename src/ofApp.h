@@ -40,7 +40,7 @@ private:
   vector<ofPoint> points;
   vector<vector<ofMesh*>> cacti;
   vector<vector<ofMesh*>> hanging;
-  ofMesh mesh;
+  vector<ofMesh*> meshes;
   ofImage image;
   bool showUI = true;
   

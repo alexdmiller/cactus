@@ -8,11 +8,11 @@ class ofApp;
 
 class Triangles : public Mode {
 public:
-  Triangles(ofApp* app_, ofMesh* mesh_) : Mode(app_, "TRIANGLES"), mesh(mesh_) {}
+  Triangles(ofApp* app_, vector<ofMesh*>* meshes_) : Mode(app_, "TRIANGLES"), meshes(meshes_) {}
   void draw();
   
 private:
-  ofMesh* mesh;
+  vector<ofMesh*>* meshes;
   float horizontalT;
   float verticalT;
 };
