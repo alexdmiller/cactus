@@ -13,8 +13,6 @@ void DrawLinesMode::draw() {
   // Draw pulsing lines
   int count = 0;
   for (int j = 0; j < groups->size(); j++) {
-    ofMesh* firstMesh = groups->at(j)[0];
-
     for (int i = 0; i < groups->at(j).size(); i++) {
       ofMesh* mesh = groups->at(j)[i];
 
@@ -29,9 +27,13 @@ void DrawLinesMode::draw() {
       }
     }
     
-    ofDrawBitmapString(ofToString(j), firstMesh->getVertex(0));
+    if (groups->at(j).size() > 0) {
+      ofMesh* firstMesh = groups->at(j)[0];
+      if (firstMesh->getNumVertices() > 0) {
+        ofDrawBitmapString(ofToString(j), firstMesh->getVertex(0));
+      }
+    }
   }
-
 }
 
 void DrawLinesMode::drawUI() {
@@ -68,6 +70,7 @@ void DrawLinesMode::mouseReleased(float x, float y) {
 }
 
 void DrawLinesMode::keyPressed(int key) {
+  cout << key << "\n";
   if (key == 99) {
     vector<ofMesh*> group;
     groups->push_back(group);
@@ -82,8 +85,20 @@ void DrawLinesMode::keyPressed(int key) {
   } else if (key == 356) {
     selectedLine = (selectedLine - 1) % groups->at(selectedGroup).size();
   } else if (key == 110) {
-    selectedGroup = (selectedGroup - 1) % groups->size();
+    selectedGroup = (selectedGroup + 1) % groups->size();
     selectedLine = -1;
+  } else if (key == 120) {
+    if (selectedGroup > -1) {
+      if (selectedLine > -1) {
+        // remove line
+        groups->at(selectedGroup).erase(groups->at(selectedGroup).begin() + selectedLine);
+        selectedLine--;
+      } else {
+        // remove group
+        groups->erase(groups->begin() + selectedGroup);
+        selectedGroup--;
+      }
+    }
   }
 }
 

@@ -47,20 +47,20 @@ void ofApp::setup(){
   vector<Mode*> modeList;
 //  modeList.push_back(new Triangles(this, &mesh));
   
-  Crawler* crawler = new Crawler(this, new vector<vector<ofMesh*>>(&cacti[0], &cacti[1]));
-  crawler->setLineWeight(3);
-  crawler->setPulseSparsity(1);
-  modeList.push_back(crawler);
-  
-  crawler = new Crawler(this, new vector<vector<ofMesh*>>(&cacti[1], &cacti[2]));
-  crawler->setLineWeight(10);
-  crawler->setPulseSparsity(10);
-  modeList.push_back(crawler);
-  
-  modeList.push_back(new Wobbler(this, &hanging));
-  
-  modeList.push_back(new Wobbler(this, new vector<vector<ofMesh*>>(&cacti[2], &cacti[4])));
-  modes.push_back(new ModeGroup(this, "TRI & CRAWL", modeList));
+//  Crawler* crawler = new Crawler(this, new vector<vector<ofMesh*>>(&cacti[0], &cacti[1]));
+//  crawler->setLineWeight(3);
+//  crawler->setPulseSparsity(1);
+//  modeList.push_back(crawler);
+//  
+//  crawler = new Crawler(this, new vector<vector<ofMesh*>>(&cacti[1], &cacti[2]));
+//  crawler->setLineWeight(10);
+//  crawler->setPulseSparsity(10);
+//  modeList.push_back(crawler);
+//  
+//  modeList.push_back(new Wobbler(this, &hanging));
+//  
+//  modeList.push_back(new Wobbler(this, new vector<vector<ofMesh*>>(&cacti[2], &cacti[4])));
+//  modes.push_back(new ModeGroup(this, "TRI & CRAWL", modeList));
   
   //  modeList.push_back(new MeshEditMode(this, &mesh));
   //  modes.push_back(new MeshEditMode(this, &mesh));
@@ -222,6 +222,18 @@ void ofApp::mouseReleased(int x, int y, int button) {
 }
 
 void ofApp::exit() {
+  int j = 0;
+  while (ofFile::doesFileExist("group_" + to_string(j) + "_mesh_0")) {
+    int i = 0;
+    while (ofFile::doesFileExist("group_" + to_string(j) + "_mesh_" + to_string(i))) {
+      ofFile::removeFile("group_" + to_string(j) + "_mesh_" + to_string(i));
+      i++;
+    }
+    j++;
+  }
+
+  
+  
   for (int j = 0; j < cacti.size(); j++) {
     for (int i = 0; i < cacti[j].size(); i++) {
       save(cacti[j][i], "group_" + to_string(j) + "_mesh_" + to_string(i));
